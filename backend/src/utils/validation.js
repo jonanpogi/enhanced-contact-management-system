@@ -41,7 +41,6 @@ const addContact = (req, res, next) => {
 
 const updateContact = (req, res, next) => {
   const schema = Joi.object({
-    id: Joi.string().required(),
     firstName: Joi.string().optional(),
     lastName: Joi.string().optional(),
     email: Joi.string().email().optional(),
@@ -61,24 +60,7 @@ const updateContact = (req, res, next) => {
     }).optional(),
   });
 
-  const { error } = schema.validate({ id: req.params.id, ...req.body });
-
-  if (error) {
-    return res.status(400).json({
-      success: false,
-      message: error.details[0].message,
-    });
-  }
-
-  next();
-};
-
-const deleteContact = (req, res, next) => {
-  const schema = Joi.object({
-    id: Joi.string().required(),
-  });
-
-  const { error } = schema.validate({ id: req.params.id });
+  const { error } = schema.validate(req.body);
 
   if (error) {
     return res.status(400).json({
@@ -93,7 +75,6 @@ const deleteContact = (req, res, next) => {
 const validation = {
   addContact,
   updateContact,
-  deleteContact,
 };
 
 Object.freeze(validation);

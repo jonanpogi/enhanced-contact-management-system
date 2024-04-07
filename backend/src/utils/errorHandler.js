@@ -6,11 +6,11 @@ export class ErrorHandler extends Error {
   }
 }
 
-const errorHandler = (fn) => (req, res, next) => {
+const errorHandler = (fn) => async (req, res, next) => {
   try {
-    fn(req, res, next);
+    await fn(req, res, next);
   } catch (error) {
-    console.error(error);
+    console.error("ERROR: ", error);
 
     if (error instanceof ErrorHandler) {
       res.status(error.statusCode).json({

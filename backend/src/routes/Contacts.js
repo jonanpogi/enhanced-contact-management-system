@@ -2,7 +2,7 @@
 import express from "express";
 import validation from "../utils/validation.js";
 import contactServices from "../services/contactServices.js";
-import errorHandler, { ErrorHandler } from "../utils/errorHandler.js";
+import errorHandler from "../utils/errorHandler.js";
 
 // initialize express router
 const router = express.Router();
@@ -10,8 +10,8 @@ const router = express.Router();
 // define routes for contacts
 router.get(
   "/contacts",
-  errorHandler((_, res) => {
-    const response = contactServices.listContacts();
+  errorHandler(async (_, res) => {
+    const response = await contactServices.listContacts();
 
     res.status(200).json({
       success: true,
@@ -23,8 +23,8 @@ router.get(
 router.post(
   "/contact",
   validation.addContact,
-  errorHandler((req, res) => {
-    const response = contactServices.createContact(req.body);
+  errorHandler(async (req, res) => {
+    const response = await contactServices.createContact(req.body);
 
     res.status(201).json({
       success: true,
@@ -36,8 +36,11 @@ router.post(
 router.put(
   "/contact/:id",
   validation.updateContact,
-  errorHandler((req, res) => {
-    const response = contactServices.updateContact(req.params.id, req.body);
+  errorHandler(async (req, res) => {
+    const response = await contactServices.updateContact(
+      req.params.id,
+      req.body
+    );
 
     res.status(200).json({
       success: true,
@@ -48,9 +51,8 @@ router.put(
 
 router.delete(
   "/contact/:id",
-  validation.deleteContact,
-  errorHandler((req, res) => {
-    const response = contactServices.deleteContact(req.params.id);
+  errorHandler(async (req, res) => {
+    const response = await contactServices.deleteContact(req.params.id);
 
     res.status(200).json({
       success: true,

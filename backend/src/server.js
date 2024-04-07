@@ -1,7 +1,7 @@
-// import express and cors packages
 import express from "express";
 import cors from "cors";
 import { Contacts } from "./routes/Contacts.js";
+import "./configs/sqlite3.js";
 
 // define port
 const PORT = 8000;
