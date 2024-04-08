@@ -27,7 +27,7 @@ const AppItem = ({ imageUrl, title, subTitle, onClick }: Props) => {
             <Avatar
               src={imageUrl}
               alt="picture"
-              sx={{ mr: 3, height: 50, width: 50 }}
+              style={{ marginRight: 6, height: 50, width: 50 }}
             />
             <Stack>
               <Typography

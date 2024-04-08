@@ -75,12 +75,13 @@ const updateContact = (req, res, next) => {
 };
 
 const uploadProfileImage = (req, res, next) => {
+  console.log(req.files);
   const schema = Joi.object({
     profileImage: Joi.binary().required(),
   });
 
   const { error } = schema.validate({
-    profileImage: req.files.profileImage.data,
+    profileImage: req.files?.profileImage?.data,
   });
 
   if (error) {

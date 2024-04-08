@@ -11,3 +11,33 @@ body {
   min-height: inherit;
   display: flex;
 }
+
+/* Custom style for SignIn & SignUp Component */
+.cl-rootBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-family: Verdana, Georgia, Arial, Calibri, "Trebuchet MS", Candara,
+    "Arial Unicode MS", "Segoe UI", "Century Gothic", Roboto, "Helvetica Neue",
+    sans-serif;
+}
+
+.cl-formButtonPrimary {
+  background-color: #1e88e5;
+}
+
+.cl-internal-b3fm6y {
+  display: none;
+}
+
+/* Custom style for Swal Component */
+.swal2-container {
+  z-index: 1500; /* highest index inside the app */
+  font-size: 16px;
+  font-family: Verdana, Georgia, Arial, Calibri, "Trebuchet MS", Candara,
+    "Arial Unicode MS", "Segoe UI", "Century Gothic", Roboto, "Helvetica Neue",
+    sans-serif;
+}
+
