@@ -27,8 +27,8 @@ const createContactsTable = () => {
     email TEXT NOT NULL,
     phoneNumber TEXT NOT NULL,
     address TEXT NOT NULL,
-    profileImageId TEXT,
-    FOREIGN KEY (profileImageId) REFERENCES images(id)
+    imageId TEXT NOT NULL,
+    FOREIGN KEY (imageId) REFERENCES images(id)
   )`;
 
   db.run(sqlContacts, (err) => {

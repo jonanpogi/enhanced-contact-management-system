@@ -5,7 +5,10 @@ import { ErrorHandler } from "../utils/errorHandler.js";
 const listContacts = async () => {
   try {
     // create sql query
-    const sql = "SELECT * FROM contacts";
+    const sql = `
+    SELECT contacts.*, images.image AS imageData 
+    FROM contacts 
+    LEFT JOIN images ON contacts.imageId = images.id`;
 
     // execute the query
     const list = await new Promise((success, fail) =>
@@ -189,7 +192,7 @@ const uploadProfileImage = async (blob) => {
           fail(new Error(error.message || "Unable to upload profile image"));
         }
 
-        success(row);
+        success(id);
       })
     );
 

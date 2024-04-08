@@ -22,6 +22,7 @@ const addContact = (req, res, next) => {
         latitude: Joi.number().required(),
       }).required(),
     }).required(),
+    imageId: Joi.string().optional(),
   });
 
   // validate the request body object
@@ -58,6 +59,7 @@ const updateContact = (req, res, next) => {
         latitude: Joi.number().required(),
       }).optional(),
     }).optional(),
+    imageId: Joi.string().optional(),
   });
 
   const { error } = schema.validate(req.body);
