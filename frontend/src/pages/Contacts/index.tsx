@@ -53,6 +53,8 @@ const Contacts = () => {
   const [contactFormDrawer, setContactFormDrawer] = useState(false);
   const [contactDetailsDrawer, setContactDetailsDrawer] = useState(false);
   const [details, setDetails] = useState<Contact | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [friends, setFriends] = useState<any>([]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -100,6 +102,28 @@ const Contacts = () => {
     }
   };
 
+  const fetchFriends = async () => {
+    try {
+      const randomPage = Math.floor(Math.random() * 10) + 1;
+
+      const url = `https://randomuser.me/api/?page=${randomPage}&results=5`;
+
+      const rawResponse = await fetch(url);
+
+      if (!rawResponse.ok) {
+        throw new Error();
+      }
+
+      const response = await rawResponse.json();
+
+      return setFriends(response.results);
+    } catch (error) {
+      return setError(
+        "An unexpected error has occurred while fetching friends"
+      );
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -123,6 +147,7 @@ const Contacts = () => {
   const openContactDetails = (details: Contact) => {
     toggleContactDetailsDrawer();
     setDetails(details);
+    fetchFriends();
   };
 
   const handleDeleteContact = (id: string) => {
@@ -396,6 +421,27 @@ const Contacts = () => {
                 {details?.address?.zipCode}
               </Typography>
             </Stack>
+          </Stack>
+
+          <Stack direction={"column"} mb={6} display={"flex"}>
+            <Typography
+              variant={isMobile ? "h6" : "h5"}
+              sx={{ marginBottom: 1 }}
+            >
+              Friends:
+            </Typography>
+
+            <Box display={"flex"} flexDirection={"column"} rowGap={2}>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+              {friends.map((friend: any) => (
+                <AppItem
+                  imageUrl={friend?.picture?.medium}
+                  title={`${friend?.name?.first} ${friend?.name?.last}`}
+                  subTitle={friend?.phone || friend?.cell}
+                  onClick={() => {}}
+                />
+              ))}
+            </Box>
           </Stack>
 
           <Button
