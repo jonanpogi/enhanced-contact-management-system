@@ -1,4 +1,11 @@
 
+# Enhanced Contact Management System
+
+Hey Reviewer!
+
+Let's make sure our backend and frontend are set up flawlessly so we can keep moving forward smoothly. We're here to make sure everything's awesome and ready for action!
+
+
 ## Installation
 
 Welcome to this Awesome Project!
@@ -35,3 +42,7 @@ To run the client: ```npm run dev```
 Open your browser and enter: http://localhost:5173
 
 Feel free to reach out if you encounter any issues. Happy coding! 🚀✨"
+## Authors
+
+- [@jonanpogi](https://www.github.com/jonanpogi)
+
