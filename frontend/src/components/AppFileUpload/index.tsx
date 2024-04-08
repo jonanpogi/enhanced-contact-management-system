@@ -8,6 +8,7 @@ import { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 
 type Props = {
+  defaultImage?: string | null;
   onChange: (image: File | null) => void;
 };
 
@@ -23,8 +24,8 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const AppFileUpload = ({ onChange }: Props) => {
-  const [image, setImage] = useState<string | null>(null);
+const AppFileUpload = ({ defaultImage = null, onChange }: Props) => {
+  const [image, setImage] = useState<string | null>(defaultImage);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

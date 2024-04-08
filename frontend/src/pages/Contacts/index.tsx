@@ -20,6 +20,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ContactForm from "./ContactForm";
 import bufferToBase64 from "../../utils/bufferToBase64";
 import Swal from "sweetalert2";
+import EditIcon from "@mui/icons-material/Edit";
 
 export type Contact = {
   id: string;
@@ -112,6 +113,10 @@ const Contacts = () => {
   };
 
   const toggleContactDetailsDrawer = () => {
+    if (contactDetailsDrawer) {
+      setDetails(null);
+    }
+
     setContactDetailsDrawer(!contactDetailsDrawer);
   };
 
@@ -255,6 +260,7 @@ const Contacts = () => {
           <ContactForm
             refetch={fetchData}
             toggleContactFormDrawer={toggleContactFormDrawer}
+            defaultValues={details as Contact}
           />
         </Box>
       </Drawer>
@@ -289,6 +295,13 @@ const Contacts = () => {
               <Typography
                 variant={isMobile ? "h6" : "h5"}
               >{`${details?.firstName}${details?.lastName}`}</Typography>
+              <Button
+                size="small"
+                variant="contained"
+                onClick={openContactForm}
+              >
+                <EditIcon /> EDIT CONTACT
+              </Button>
             </Stack>
           </Stack>
 

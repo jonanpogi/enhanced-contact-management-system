@@ -13,9 +13,14 @@ type ContactInput = { imageId?: string } & Omit<Contact, "imageData">;
 type Props = {
   toggleContactFormDrawer: () => void;
   refetch: () => Promise<void>;
+  defaultValues?: Contact;
 };
 
-const ContactForm = ({ refetch, toggleContactFormDrawer }: Props) => {
+const ContactForm = ({
+  refetch,
+  toggleContactFormDrawer,
+  defaultValues,
+}: Props) => {
   const [image, setImage] = useState<File | null>(null);
   const {
     register,
@@ -123,13 +128,17 @@ const ContactForm = ({ refetch, toggleContactFormDrawer }: Props) => {
 
   return (
     <>
-      <AppFileUpload onChange={(image) => setImage(image)} />
+      <AppFileUpload
+        defaultImage={defaultValues?.imageData || null}
+        onChange={(image) => setImage(image)}
+      />
       <Grid container flex={1} rowSpacing={2} columnSpacing={1}>
         <Grid item xs={12} sm={6}>
           <InputLabel shrink>
             First Name <AppRequiredFieldIndicator />
           </InputLabel>
           <TextField
+            defaultValue={defaultValues?.firstName || ""}
             placeholder="John"
             fullWidth
             size="small"
@@ -153,6 +162,7 @@ const ContactForm = ({ refetch, toggleContactFormDrawer }: Props) => {
             Last Name <AppRequiredFieldIndicator />
           </InputLabel>
           <TextField
+            defaultValue={defaultValues?.lastName || ""}
             placeholder="Doe"
             fullWidth
             size="small"
@@ -176,6 +186,7 @@ const ContactForm = ({ refetch, toggleContactFormDrawer }: Props) => {
             Email <AppRequiredFieldIndicator />
           </InputLabel>
           <TextField
+            defaultValue={defaultValues?.email || ""}
             placeholder="john.doe@gmail.com"
             fullWidth
             size="small"
@@ -199,6 +210,7 @@ const ContactForm = ({ refetch, toggleContactFormDrawer }: Props) => {
             Phone Number <AppRequiredFieldIndicator />
           </InputLabel>
           <TextField
+            defaultValue={defaultValues?.phoneNumber.number || ""}
             placeholder="09XXXXXXXXX"
             fullWidth
             size="small"
@@ -223,6 +235,7 @@ const ContactForm = ({ refetch, toggleContactFormDrawer }: Props) => {
             Street <AppRequiredFieldIndicator />
           </InputLabel>
           <TextField
+            defaultValue={defaultValues?.address.street || ""}
             placeholder="123 Street"
             fullWidth
             size="small"
@@ -246,6 +259,7 @@ const ContactForm = ({ refetch, toggleContactFormDrawer }: Props) => {
             State <AppRequiredFieldIndicator />
           </InputLabel>
           <TextField
+            defaultValue={defaultValues?.address.state || ""}
             placeholder="Arizona"
             fullWidth
             size="small"
@@ -269,6 +283,7 @@ const ContactForm = ({ refetch, toggleContactFormDrawer }: Props) => {
             Country <AppRequiredFieldIndicator />
           </InputLabel>
           <TextField
+            defaultValue={defaultValues?.address.country || ""}
             placeholder="United States"
             fullWidth
             size="small"
@@ -292,6 +307,7 @@ const ContactForm = ({ refetch, toggleContactFormDrawer }: Props) => {
             Zip Code <AppRequiredFieldIndicator />
           </InputLabel>
           <TextField
+            defaultValue={defaultValues?.address.zipCode || ""}
             placeholder="85001"
             fullWidth
             size="small"
