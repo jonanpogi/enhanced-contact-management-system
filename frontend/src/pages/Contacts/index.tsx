@@ -259,7 +259,10 @@ const Contacts = () => {
 
           <ContactForm
             refetch={fetchData}
-            toggleContactFormDrawer={toggleContactFormDrawer}
+            toggleContactFormDrawer={() => {
+              setContactFormDrawer(false);
+              setContactDetailsDrawer(false);
+            }}
             defaultValues={details as Contact}
           />
         </Box>
@@ -294,7 +297,7 @@ const Contacts = () => {
             <Stack direction={"column"} ml={3}>
               <Typography
                 variant={isMobile ? "h6" : "h5"}
-              >{`${details?.firstName}${details?.lastName}`}</Typography>
+              >{`${details?.firstName} ${details?.lastName}`}</Typography>
               <Button
                 size="small"
                 variant="contained"

@@ -21,6 +21,7 @@ const ContactForm = ({
   toggleContactFormDrawer,
   defaultValues,
 }: Props) => {
+  const [imageError, setImageError] = useState<string | null>(null);
   const [image, setImage] = useState<File | null>(null);
   const {
     register,
@@ -30,41 +31,42 @@ const ContactForm = ({
   } = useForm<ContactInput>();
 
   const onSubmit: SubmitHandler<ContactInput> = async (data) => {
-    if (image === null) return;
-
     // show loading dialog
     Swal.showLoading();
 
-    // create form data
-    const formData = new FormData();
+    let imageId = undefined;
 
-    // append image to form data
-    formData.append("profileImage", image);
+    if (image !== null) {
+      // create form data
+      const formData = new FormData();
 
-    // send image to server
-    const imageResponse = await fetch(`${BASE_URL}/contact/image`, {
-      method: "POST",
-      body: formData,
-    });
+      // append image to form data
+      formData.append("profileImage", image);
 
-    // get image response data
-    const imageResponseData = (await imageResponse.json()) as {
-      success: boolean;
-      data: string;
-    };
-
-    // check if image upload is successful
-    if (!imageResponseData.success) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        confirmButtonColor: blue[500],
-        text: "Failed to upload image",
+      // send image to server
+      const imageResponse = await fetch(`${BASE_URL}/contact/image`, {
+        method: "POST",
+        body: formData,
       });
-    }
 
-    // get image id
-    const imageId = imageResponseData.data;
+      // get image response data
+      const imageResponseData = (await imageResponse.json()) as {
+        success: boolean;
+        data: string;
+      };
+
+      // check if image upload is successful
+      if (!imageResponseData.success) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          confirmButtonColor: blue[500],
+          text: "Failed to upload image",
+        });
+      }
+
+      imageId = imageResponseData.data;
+    }
 
     // create contact input
     const body: ContactInput = {
@@ -80,14 +82,22 @@ const ContactForm = ({
       imageId,
     };
 
-    // send contact to server
-    const contactResponse = await fetch(`${BASE_URL}/contact`, {
-      method: "POST",
+    const url = !defaultValues
+      ? `${BASE_URL}/contact`
+      : `${BASE_URL}/contact/${defaultValues.id}`;
+
+    const opts = {
+      method: !defaultValues ? "POST" : "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
-    });
+    };
+
+    console.log(url, opts);
+
+    // send contact to server
+    const contactResponse = await fetch(url, opts);
 
     const contactResponseData = (await contactResponse.json()) as {
       success: boolean;
@@ -111,6 +121,12 @@ const ContactForm = ({
   };
 
   const handleSaveChanges = async () => {
+    if (defaultValues) return handleSubmit(onSubmit)();
+
+    if (image === null) {
+      setImageError("Please upload an image.");
+    }
+
     const test = await trigger([
       "firstName",
       "lastName",
@@ -131,6 +147,7 @@ const ContactForm = ({
       <AppFileUpload
         defaultImage={defaultValues?.imageData || null}
         onChange={(image) => setImage(image)}
+        error={imageError}
       />
       <Grid container flex={1} rowSpacing={2} columnSpacing={1}>
         <Grid item xs={12} sm={6}>
@@ -210,7 +227,11 @@ const ContactForm = ({
             Phone Number <AppRequiredFieldIndicator />
           </InputLabel>
           <TextField
-            defaultValue={defaultValues?.phoneNumber.number || ""}
+            defaultValue={
+              defaultValues?.phoneNumber.number
+                ? "0" + defaultValues?.phoneNumber.number
+                : ""
+            }
             placeholder="09XXXXXXXXX"
             fullWidth
             size="small"
@@ -316,9 +337,9 @@ const ContactForm = ({
                 value: true,
                 message: "Please enter your zip code.",
               },
-              pattern: {
-                value: /^\d{5}$/,
-                message: "Please enter a valid 5-digit zip code.",
+              minLength: {
+                value: 2,
+                message: "Please enter atleast 2 characters.",
               },
             })}
             error={!!errors.address?.zipCode}

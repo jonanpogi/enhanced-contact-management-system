@@ -22,7 +22,7 @@ const addContact = (req, res, next) => {
         latitude: Joi.number().required(),
       }).required(),
     }).required(),
-    imageId: Joi.string().optional(),
+    imageId: Joi.string().required(),
   });
 
   // validate the request body object
@@ -75,7 +75,6 @@ const updateContact = (req, res, next) => {
 };
 
 const uploadProfileImage = (req, res, next) => {
-  console.log(req.files);
   const schema = Joi.object({
     profileImage: Joi.binary().required(),
   });
