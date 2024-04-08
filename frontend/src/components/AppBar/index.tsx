@@ -8,11 +8,16 @@ import {
 } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import LogoutIcon from "@mui/icons-material/Logout";
+import LoginIcon from "@mui/icons-material/Login";
 import theme from "../../utils/theme";
 import { grey } from "@mui/material/colors";
+import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 
 const AppBar = () => {
-  const isMoble = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <MUIAppBar
@@ -25,16 +30,32 @@ const AppBar = () => {
         <CallIcon sx={{ marginRight: 2 }} />
 
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          {isMoble ? "" : "Enhanced Contact Management System"}
+          {isMobile ? "" : "Enhanced Contact Management System"}
         </Typography>
 
-        {isMoble ? (
-          <IconButton>
-            <LogoutIcon sx={{ color: "white" }} />
-          </IconButton>
-        ) : (
-          <Button color="inherit">SIGNOUT</Button>
-        )}
+        <SignedIn>
+          {isMobile ? (
+            <IconButton>
+              <LogoutIcon sx={{ color: "white" }} />
+            </IconButton>
+          ) : (
+            <Button color="inherit" onClick={() => signOut()}>
+              SIGNOUT
+            </Button>
+          )}
+        </SignedIn>
+
+        <SignedOut>
+          {isMobile ? (
+            <IconButton>
+              <LoginIcon sx={{ color: "white" }} />
+            </IconButton>
+          ) : (
+            <Button color="inherit" onClick={() => navigate("/sign-in")}>
+              SIGNIN
+            </Button>
+          )}
+        </SignedOut>
       </Toolbar>
     </MUIAppBar>
   );
