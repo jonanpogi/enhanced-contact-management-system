@@ -4,6 +4,7 @@ import AppItem from "../../components/AppItem";
 import {
   Alert,
   AlertTitle,
+  Avatar,
   Box,
   Button,
   Drawer,
@@ -18,6 +19,7 @@ import theme from "../../utils/theme";
 import CloseIcon from "@mui/icons-material/Close";
 import ContactForm from "./ContactForm";
 import bufferToBase64 from "../../utils/bufferToBase64";
+import Swal from "sweetalert2";
 
 export type Contact = {
   id: string;
@@ -48,6 +50,8 @@ const Contacts = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [contactFormDrawer, setContactFormDrawer] = useState(false);
+  const [contactDetailsDrawer, setContactDetailsDrawer] = useState(false);
+  const [details, setDetails] = useState<Contact | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -107,6 +111,69 @@ const Contacts = () => {
     toggleContactFormDrawer();
   };
 
+  const toggleContactDetailsDrawer = () => {
+    setContactDetailsDrawer(!contactDetailsDrawer);
+  };
+
+  const openContactDetails = (details: Contact) => {
+    toggleContactDetailsDrawer();
+    setDetails(details);
+  };
+
+  const handleDeleteContact = (id: string) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      reverseButtons: true,
+      preConfirm: async () => {
+        try {
+          const url = `${BASE_URL}/contact/${id}`;
+
+          const rawResponse = await fetch(url, {
+            method: "DELETE",
+          });
+
+          const response = (await rawResponse.json()) as {
+            success: boolean;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            data: any;
+            message?: string;
+          };
+
+          if (!response.success) {
+            throw new Error(response.message);
+          }
+
+          return { success: response.success };
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error(error);
+            Swal.fire("Error!", error.message, "error");
+          } else {
+            Swal.fire("Error!", "An unexpected error has occurred", "error");
+          }
+        }
+      },
+      showLoaderOnConfirm: true,
+      allowOutsideClick: () => !Swal.isLoading(),
+    }).then(async (result) => {
+      if (result.isConfirmed && result.value?.success) {
+        await Swal.fire({
+          title: "Deleted!",
+          text: "The contact has been deleted.",
+          icon: "success",
+        });
+        await fetchData();
+        toggleContactDetailsDrawer();
+      }
+    });
+  };
+
   return (
     <>
       <Box
@@ -158,7 +225,7 @@ const Contacts = () => {
               imageUrl={contact.imageData}
               title={`${contact.firstName} ${contact.lastName}`}
               subTitle={`(${contact.phoneNumber.countryCode}) ${contact.phoneNumber.number}`}
-              onClick={() => alert(JSON.stringify(contact))}
+              onClick={() => openContactDetails(contact)}
             />
           ))}
       </Box>
@@ -185,7 +252,144 @@ const Contacts = () => {
             <i>Please fill in the form below to add a new contact.</i>
           </Typography>
 
-          <ContactForm refetch={fetchData} toggleContactFormDrawer={toggleContactFormDrawer} />
+          <ContactForm
+            refetch={fetchData}
+            toggleContactFormDrawer={toggleContactFormDrawer}
+          />
+        </Box>
+      </Drawer>
+
+      <Drawer
+        anchor="right"
+        open={contactDetailsDrawer}
+        onClose={toggleContactDetailsDrawer}
+      >
+        <Box sx={{ width: isMobile ? "100vw" : 500, padding: 2 }}>
+          {isMobile && (
+            <IconButton onClick={toggleContactDetailsDrawer}>
+              <CloseIcon />
+            </IconButton>
+          )}
+          <Stack
+            direction={"row"}
+            mb={6}
+            display={"flex"}
+            alignItems={"center"}
+          >
+            <Avatar
+              src={details?.imageData}
+              sx={{
+                width: isMobile ? 150 : 180,
+                height: isMobile ? 150 : 180,
+              }}
+              alt="Profile Picture"
+            />
+
+            <Stack direction={"column"} ml={3}>
+              <Typography
+                variant={isMobile ? "h6" : "h5"}
+              >{`${details?.firstName}${details?.lastName}`}</Typography>
+            </Stack>
+          </Stack>
+
+          <Stack direction={"column"} mb={6} display={"flex"}>
+            <Typography
+              variant={isMobile ? "h6" : "h5"}
+              sx={{ marginBottom: 1 }}
+            >
+              Personal Details:
+            </Typography>
+
+            <Stack display={"flex"} direction={"column"}>
+              <Typography color={"GrayText"} variant={"caption"}>
+                First Name:
+              </Typography>
+              <Typography variant={isMobile ? "body2" : "body1"}>
+                {details?.firstName}
+              </Typography>
+            </Stack>
+
+            <Stack display={"flex"} direction={"column"}>
+              <Typography color={"GrayText"} variant={"caption"}>
+                Last Name:
+              </Typography>
+              <Typography variant={isMobile ? "body2" : "body1"}>
+                {details?.lastName}
+              </Typography>
+            </Stack>
+
+            <Stack display={"flex"} direction={"column"}>
+              <Typography color={"GrayText"} variant={"caption"}>
+                Email:
+              </Typography>
+              <Typography variant={isMobile ? "body2" : "body1"}>
+                {details?.email}
+              </Typography>
+            </Stack>
+
+            <Stack display={"flex"} direction={"column"}>
+              <Typography color={"GrayText"} variant={"caption"}>
+                Phone Number:
+              </Typography>
+              <Typography variant={isMobile ? "body2" : "body1"}>
+                {`(${details?.phoneNumber.countryCode}) ${details?.phoneNumber.number}`}
+              </Typography>
+            </Stack>
+          </Stack>
+
+          <Stack direction={"column"} mb={6} display={"flex"}>
+            <Typography
+              variant={isMobile ? "h6" : "h5"}
+              sx={{ marginBottom: 1 }}
+            >
+              Address Details:
+            </Typography>
+
+            <Stack display={"flex"} direction={"column"}>
+              <Typography color={"GrayText"} variant={"caption"}>
+                Street
+              </Typography>
+              <Typography variant={isMobile ? "body2" : "body1"}>
+                {details?.address?.street}
+              </Typography>
+            </Stack>
+
+            <Stack display={"flex"} direction={"column"}>
+              <Typography color={"GrayText"} variant={"caption"}>
+                State
+              </Typography>
+              <Typography variant={isMobile ? "body2" : "body1"}>
+                {details?.address?.state}
+              </Typography>
+            </Stack>
+
+            <Stack display={"flex"} direction={"column"}>
+              <Typography color={"GrayText"} variant={"caption"}>
+                Country
+              </Typography>
+              <Typography variant={isMobile ? "body2" : "body1"}>
+                {details?.address?.country}
+              </Typography>
+            </Stack>
+
+            <Stack display={"flex"} direction={"column"}>
+              <Typography color={"GrayText"} variant={"caption"}>
+                Zip Code
+              </Typography>
+              <Typography variant={isMobile ? "body2" : "body1"}>
+                {details?.address?.zipCode}
+              </Typography>
+            </Stack>
+          </Stack>
+
+          <Button
+            color="error"
+            fullWidth
+            variant="contained"
+            onClick={() => handleDeleteContact(details?.id as string)}
+          >
+            DELETE CONTACT
+          </Button>
         </Box>
       </Drawer>
     </>
