@@ -72,9 +72,29 @@ const updateContact = (req, res, next) => {
   next();
 };
 
+const uploadProfileImage = (req, res, next) => {
+  const schema = Joi.object({
+    profileImage: Joi.binary().required(),
+  });
+
+  const { error } = schema.validate({
+    profileImage: req.files.profileImage.data,
+  });
+
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message,
+    });
+  }
+
+  next();
+};
+
 const validation = {
   addContact,
   updateContact,
+  uploadProfileImage,
 };
 
 Object.freeze(validation);

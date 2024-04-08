@@ -61,5 +61,20 @@ router.delete(
   })
 );
 
+router.post(
+  "/contact/image",
+  validation.uploadProfileImage,
+  errorHandler(async (req, res) => {
+    const response = await contactServices.uploadProfileImage(
+      req.files.profileImage.data
+    );
+
+    res.status(200).json({
+      success: true,
+      data: response,
+    });
+  })
+);
+
 // export router as Contacts route
 export { router as Contacts };

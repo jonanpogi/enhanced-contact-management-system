@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { Contacts } from "./routes/Contacts.js";
+import fileUpload from "express-fileupload";
 import "./configs/sqlite3.js";
 
 // define port
@@ -17,6 +18,7 @@ const app = express();
 // apply middlewares
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(fileUpload());
 
 // apply routes
 app.use("/api", Contacts);

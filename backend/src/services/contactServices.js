@@ -174,11 +174,38 @@ const deleteContact = async (id) => {
   }
 };
 
+const uploadProfileImage = async (blob) => {
+  try {
+    // generate a new ID
+    const id = new ObjectId().toString();
+
+    // create the SQL query for uploading the profile image
+    const sql = `INSERT INTO images (id, image) VALUES (?, ?)`;
+
+    // execute the query
+    const newImage = await new Promise((success, fail) =>
+      db.run(sql, [id, blob], (error) => {
+        if (error) {
+          fail(new Error(error.message || "Unable to upload profile image"));
+        }
+
+        success(row);
+      })
+    );
+
+    // return the new image ID
+    return newImage;
+  } catch (error) {
+    throw new ErrorHandler(500, error.message);
+  }
+};
+
 const contactServices = {
   listContacts,
   createContact,
   updateContact,
   deleteContact,
+  uploadProfileImage,
 };
 
 Object.freeze(contactServices);
